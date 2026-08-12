@@ -138,10 +138,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (this.getByUsername(cmd.getUsername()) != null) {
             throw new BusinessException(I18nUtils.getMessage("user.username.exists"));
         }
-        // 邮箱唯一
-        SysUser byMail = this.getByMail(cmd.getEmail().trim().toLowerCase(Locale.ROOT));
-        if (byMail != null) {
-            throw new BusinessException(I18nUtils.getMessage("user.email.exists"));
+        // 邮箱唯一（邮箱可选，填写时校验唯一）
+        if (cmd.getEmail() != null && !cmd.getEmail().isBlank()) {
+            SysUser byMail = this.getByMail(cmd.getEmail().trim().toLowerCase(Locale.ROOT));
+            if (byMail != null) {
+                throw new BusinessException(I18nUtils.getMessage("user.email.exists"));
+            }
         }
         // 角色必须存在
         SysRole role = roleService.getRoleById(cmd.getRoleId());
@@ -166,7 +168,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser user = new SysUser();
         user.setUsername(cmd.getUsername());
         user.setPassword(passwordHashService.encode(rawPassword));
-        user.setEmail(cmd.getEmail().trim().toLowerCase(Locale.ROOT));
+        if (cmd.getEmail() != null && !cmd.getEmail().isBlank()) {
+            user.setEmail(cmd.getEmail().trim().toLowerCase(Locale.ROOT));
+        }
         user.setNickname(cmd.getNickname());
         user.setStatus(0);
         // 管理员新建用户：按配置决定首次登录是否强制改密
