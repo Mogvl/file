@@ -43,6 +43,7 @@ import java.util.Objects;
 import java.util.Locale;
 
 import static com.xddcodec.fs.system.domain.table.SysUserTableDef.SYS_USER;
+import static com.xddcodec.fs.system.domain.table.SysWorkspaceMemberTableDef.SYS_WORKSPACE_MEMBER;
 
 /**
  * 用户表 服务实现类
@@ -248,6 +249,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             count++;
         }
         return count;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteByAdmin(String userId) {
+        // 不能删除自己
+        String currentUserId = StpUtil.getLoginIdAsString();
+        if (userId.equals(currentUserId)) {
+            throw new BusinessException(I18nUtils.getMessage("user.cannot.delete.self"));
+        }
+        // 用户必须存在
+        SysUser user = this.getById(userId);
+        if (user == null) {
+            throw new BusinessException(I18nUtils.getMessage("user.not.exist"));
+        }
+        // 级联清理：成员关系
+        workspaceMemberService.remove(
+                new QueryWrapper().where(SYS_WORKSPACE_MEMBER.USER_ID.eq(userId))
+        );
+        // 级联清理：传输配置
+        userTransferSettingService.deleteUserTransferSetting(userId);
+        // 级联清理：用户配置（该用户不存在则忽略）
+        this.removeById(userId);
     }
 
     @Transactional(rollbackFor = Exception.class)

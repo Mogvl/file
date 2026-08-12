@@ -61,6 +61,14 @@ public class UserController {
         return Result.ok(count);
     }
 
+    @Operation(summary = "管理员删除用户（级联清理关联数据）")
+    @DeleteMapping
+    @SaCheckPermission("member:manage")
+    public Result<?> deleteByAdmin(@Validated @RequestBody UserDeleteCmd cmd) {
+        userService.deleteByAdmin(cmd.getUserId());
+        return Result.ok();
+    }
+
     @Operation(summary = "编辑用户")
     @PutMapping("/info")
     public Result<?> editUserInfo(@Validated @RequestBody UserEditInfoCmd cmd) {

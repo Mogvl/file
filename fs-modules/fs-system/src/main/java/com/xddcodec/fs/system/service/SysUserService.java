@@ -60,6 +60,13 @@ public interface SysUserService extends IService<SysUser> {
     int batchCreateByAdmin(UserBatchCreateCmd cmd);
 
     /**
+     * 管理员删除用户（级联清理成员关系、传输配置、收藏、分享、传输任务、收集、登录日志）
+     *
+     * @param userId
+     */
+    void deleteByAdmin(String userId);
+
+    /**
      * 编辑用户个人信息
      *
      * @param cmd
