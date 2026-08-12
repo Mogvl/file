@@ -291,35 +291,6 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 
 ---
 
-## Contact
-
-- GitHub: [@Freedom](https://github.com/xddcode)
-- Gitee: [@Freedom](https://gitee.com/xddcode)
-- Email: xddcodec@gmail.com
-- WeChat:
-
-  **Please indicate your purpose when adding WeChat**
-
-<img alt="wx.png" height="300" src=".images/wx.png" width="250"/>
-
-- WeChat Group:
-
-<img alt="wx.png" height="300" src=".images/wx_group.png" width="250"/>
-
-- WeChat Official Account:
-
-<img alt="wp.png" src=".images/mp.png"/>
-
----
-
-## ❤ Donate
-
-If you think the free-fs project can help you, or bring you convenience and inspiration, or you agree with this project, you can sponsor my efforts!
-
-Please give a ⭐️ to support!
-
-<img alt="pay.png" height="300" src=".images/pay.png" width="250"/>
-
 <div align="center">
 
 Made with ❤️ by [@xddcode](https://gitee.com/xddcode)

@@ -293,35 +293,6 @@ chore: 构建/工具链更新
 
 ---
 
-## 联系方式
-
-- GitHub: [@Freedom](https://github.com/xddcode)
-- Gitee: [@Freedom](https://gitee.com/xddcode)
-- Email: xddcodec@gmail.com
-- 微信：
-
-  **添加微信，请注明来意**
-
-<img alt="wx.png" height="300" src=".images/wx.png" width="250"/>
-
-- 微信群：
-
-<img alt="wx.png" height="300" src=".images/wx_group.png" width="250"/>
-
-- 微信公众号：
-
-<img alt="wp.png" src=".images/mp.png"/>
-
----
-
-## ❤ 捐赠
-
-如果你认为 free-fs 项目可以为你提供帮助，或者给你带来方便和灵感，或者你认同这个项目，可以为我的付出赞助一下哦！
-
-请给一个 ⭐️ 支持一下！
-
-<img alt="pay.png" height="300" src=".images/pay.png" width="250"/>
-
 <div align="center">
 
 Made with ❤️ by [@xddcode](https://gitee.com/xddcode)
