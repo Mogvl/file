@@ -270,7 +270,8 @@
       "createFailed": "创建用户失败",
       "create": "创建用户",
       "creating": "创建中...",
-      "cancel": "取消"
+      "cancel": "取消",
+      "emailOptionalHint": "可选，不填则该账号无邮箱"
     }
   },
   "profile": {

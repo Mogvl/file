@@ -270,7 +270,8 @@
       "createFailed": "Failed to create user",
       "create": "Create User",
       "creating": "Creating...",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "emailOptionalHint": "Optional. Leave blank for an account without email."
     }
   },
   "profile": {

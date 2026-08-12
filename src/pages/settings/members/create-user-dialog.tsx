@@ -59,7 +59,7 @@ export function CreateUserDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!username.trim() || !nickname.trim() || !email.trim() || !roleId) {
+    if (!username.trim() || !nickname.trim() || !roleId) {
       toast.error(t('members.createDialog.fillAll'))
       return
     }
@@ -73,7 +73,7 @@ export function CreateUserDialog({
       await userApi.createByAdmin({
         username: username.trim(),
         nickname: nickname.trim(),
-        email: email.trim(),
+        email: email.trim() || undefined,
         password: password.trim() || undefined,
         roleId: Number(roleId),
       })
@@ -125,7 +125,6 @@ export function CreateUserDialog({
             </div>
             <div className='space-y-3'>
               <Label htmlFor='create-email'>
-                <span className='relative top-0.5 text-red-500'>* </span>
                 {t('members.createDialog.email')}
               </Label>
               <Input
@@ -135,8 +134,10 @@ export function CreateUserDialog({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder='user@example.com'
                 disabled={loading}
-                required
               />
+              <p className='text-xs text-muted-foreground'>
+                {t('members.createDialog.emailOptionalHint')}
+              </p>
             </div>
             <div className='space-y-3'>
               <Label htmlFor='create-password'>
