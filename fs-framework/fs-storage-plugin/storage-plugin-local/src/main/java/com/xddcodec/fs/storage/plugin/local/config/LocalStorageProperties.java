@@ -26,7 +26,7 @@ public class LocalStorageProperties {
     /**
      * 访问基础URL
      */
-    private String baseUrl = "http://localhost:8080/files";
+    private String baseUrl = "http://localhost:10051/files";
 
     /**
      * 转换为 StorageConfig 的 properties Map

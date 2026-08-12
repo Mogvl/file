@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 10051
   tomcat:
     # 如果启用了全局虚拟线程，这里的配置会失效
     threads:
@@ -171,4 +171,4 @@ springdoc:
 
 fs:
   cors:
-    allowed-origins: ${FS_CORS_ALLOWED_ORIGINS:http://localhost,http://127.0.0.1,http://localhost:5173,http://127.0.0.1:5173}
+    allowed-origins: ${FS_CORS_ALLOWED_ORIGINS:http://localhost,http://127.0.0.1,http://localhost:10050,http://127.0.0.1:10050}

@@ -15,7 +15,7 @@ public class FilePreviewConfig {
     /**
      * 预览文件流处理api
      */
-    private String streamApi = "http://localhost:8080/api/file/stream/preview";
+    private String streamApi = "http://localhost:10051/api/file/stream/preview";
     /**
      * 预览文件最大大小（字节），默认500MB
      */

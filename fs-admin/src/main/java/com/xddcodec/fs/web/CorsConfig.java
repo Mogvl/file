@@ -20,7 +20,7 @@ public class CorsConfig {
 
     private final List<String> allowedOrigins;
 
-    public CorsConfig(@Value("${fs.cors.allowed-origins:http://localhost,http://127.0.0.1,http://localhost:5173,http://127.0.0.1:5173}") List<String> allowedOrigins) {
+    public CorsConfig(@Value("${fs.cors.allowed-origins:http://localhost,http://127.0.0.1,http://localhost:10050,http://127.0.0.1:10050}") List<String> allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
     }
 

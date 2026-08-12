@@ -58,11 +58,11 @@ spring:
 fs:
   # 前端地址
   frontend:
-    domain: ${FS_FRONTEND_DOMAIN:http://localhost:5173}
+    domain: ${FS_FRONTEND_DOMAIN:http://localhost:10050}
   # 预览配置
   preview:
     # 预览文件流处理地址，默认是本服务地址,端口号
-    stream-api: http://localhost:8080/api/file/stream/preview
+    stream-api: http://localhost:10051/api/file/stream/preview
     # 预览文件最大大小（字节），默认500MB
     max-file-size: 524288000
     # 单次Range请求最大大小（字节），默认10MB
@@ -88,8 +88,8 @@ fs:
   # 本地存储配置（默认）
   storage:
     local:
-      base-path: D:/insentek/upload
-      base-url: http://localhost:8080/files
+      base-path: D:/file
+      base-url: http://localhost:10051/files
 
 mybatis-flex:
   # sql审计
