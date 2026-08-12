@@ -11,6 +11,9 @@ import {
   SetPasswordParams,
   ForgotPasswordParams,
   UpdateUserInfoParams,
+  UserCreateByAdminParams,
+  UserConfig,
+  UserConfigUpdateParams,
 } from '@/types/user'
 import { request } from './request'
 
@@ -19,8 +22,6 @@ export const userApi = {
   login: (data: LoginParams) => {
     return request.post<LoginRes>('/apis/auth/login', data)
   },
-
-  /** 登录-邮箱验证码：向 account 对应邮箱发送验证码（与后端路径对齐） */
   sendLoginEmailCode: (account: string) => {
     return request.post<unknown>('/apis/auth/login/email-code', null, {
       params: { account },
@@ -30,6 +31,21 @@ export const userApi = {
   // 注册
   register: (data: UserRegisterParams) => {
     return request.post<UserInfo>('/apis/user/register', data)
+  },
+
+  /** 管理员创建用户 */
+  createByAdmin: (data: UserCreateByAdminParams) => {
+    return request.post<unknown>('/apis/user/create', data)
+  },
+
+  /** 获取用户管理配置 */
+  getUserConfig: () => {
+    return request.get<UserConfig>('/apis/user-config')
+  },
+
+  /** 更新用户管理配置 */
+  updateUserConfig: (data: UserConfigUpdateParams) => {
+    return request.put<unknown>('/apis/user-config', data)
   },
 
   // 获取用户信息

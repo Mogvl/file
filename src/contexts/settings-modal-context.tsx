@@ -15,6 +15,7 @@ export type SettingsTab =
   | 'members'
   | 'roles'
   | 'logs'
+  | 'user-config'
 
 type SettingsModalValue = {
   open: boolean

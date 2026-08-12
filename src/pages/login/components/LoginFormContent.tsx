@@ -111,13 +111,20 @@ export default function LoginFormContent({ onSwitchForm }: Props) {
 
     setLoading(true)
     try {
-      await userApi.login(payload)
+      const loginRes = await userApi.login(payload)
 
       const userInfo = await userApi.getUserInfo()
 
       await login(userInfo, isRemember)
 
       toast.success(t('toast.loginSuccess'))
+
+      // 管理员新建用户：首次登录需强制修改密码，跳转改密页
+      if (loginRes?.needChangePassword) {
+        navigate('/change-password', { replace: true })
+        return
+      }
+
       const next = getSafeRedirectPath(searchParams) ?? '/'
       navigate(next, { replace: true })
     } catch {

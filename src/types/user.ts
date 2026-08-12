@@ -20,11 +20,15 @@ export interface UserInfo {
   lastLoginAt: string
   /** 是否已设置登录密码（邮箱验证码注册未设密码时为 false） */
   isSetPassword?: boolean
+  /** 首次登录是否强制修改密码 0-否 1-是 */
+  forceChangePassword?: number
 }
 
 export interface LoginRes {
   id: string
   username: string
+  /** 首次登录是否强制修改密码 */
+  needChangePassword?: boolean
 }
 
 /** 与登录接口一致:password 账号/邮箱+密码;email_code 邮箱+验证码(验证码走 password 字段) */
@@ -45,6 +49,32 @@ export interface UserRegisterParams {
   nickname: string
   avatar?: string
   inviteToken?: string
+}
+
+/** 管理员创建用户 */
+export interface UserCreateByAdminParams {
+  username: string
+  nickname: string
+  email: string
+  /** 初始密码，为空时使用管理员配置的默认初始密码 */
+  password?: string
+  roleId: number
+}
+
+/** 用户管理配置 */
+export interface UserConfig {
+  /** 默认初始密码（已配置时掩码回显） */
+  defaultPassword?: string | null
+  /** 新建用户首次登录是否强制改密 0-否 1-是 */
+  forceChangePasswordOnFirstLogin: number
+}
+
+/** 更新用户管理配置 */
+export interface UserConfigUpdateParams {
+  /** 默认初始密码，留空/掩码表示不修改 */
+  defaultPassword?: string
+  /** 强制改密开关 0-否 1-是 */
+  forceChangePasswordOnFirstLogin?: number
 }
 
 export interface ForgotPasswordParams {

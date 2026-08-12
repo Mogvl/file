@@ -12,7 +12,9 @@
     "workspace": "General",
     "members": "Members",
     "roles": "Roles",
-    "logs": "Activity log"
+    "logs": "Activity log",
+    "groupAdmin": "User Management",
+    "userConfig": "User Config"
   },
   "sidebar": {
     "selectPlaceholder": "Choose a section"
@@ -249,6 +251,26 @@
       "cancel": "Cancel",
       "sending": "Sending...",
       "send": "Send invite"
+    },
+    "createUser": "New User",
+    "createDialog": {
+      "title": "New User",
+      "username": "Username",
+      "nickname": "Nickname",
+      "nicknamePlaceholder": "Enter nickname",
+      "email": "Email",
+      "password": "Initial Password",
+      "passwordPlaceholder": "Leave blank to use system default",
+      "passwordHint": "At least 8 characters; leave blank to use the default initial password",
+      "passwordMin": "Password must be at least 8 characters",
+      "selectRole": "Role",
+      "selectRolePlaceholder": "Select role",
+      "fillAll": "Please fill in all required fields",
+      "created": "User created successfully",
+      "createFailed": "Failed to create user",
+      "create": "Create User",
+      "creating": "Creating...",
+      "cancel": "Cancel"
     }
   },
   "profile": {
@@ -328,5 +350,26 @@
   "common": {
     "cancel": "Cancel",
     "loading": "Loading..."
+  },
+  "userConfig": {
+    "pageTitle": "User Config",
+    "pageDescription": "Configure the default initial password and first-login change policy for admin-created users.",
+    "defaultPassword": "Default Initial Password",
+    "defaultPasswordPlaceholder": "Enter default initial password (min 8 chars)",
+    "defaultPasswordHint": "When an admin creates a user without a password, this default is used",
+    "passwordConfigured": "Default password configured. Enter a new value to overwrite.",
+    "clearPassword": "Clear configured password",
+    "forceChangeOnFirstLogin": "Force password change on first login for new users",
+    "forceChangeHint": "When enabled, admin-created users must reset their password on first login",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Config saved",
+    "saveFailed": "Failed to save",
+    "passwordMin": "Password must be at least 8 characters"
+  },
+  "forceChange": {
+    "title": "Password Change Required",
+    "description": "For security reasons, you must set a new password before continuing.",
+    "formTitle": "Set a new password"
   }
 }

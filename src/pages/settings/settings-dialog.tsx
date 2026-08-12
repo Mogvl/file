@@ -37,6 +37,7 @@ import { SettingsWorkspace } from './workspace'
 import { SettingsMembers } from './members'
 import { SettingsRoles } from './roles'
 import { SettingsLogs } from './activity-log'
+import { SettingsUserConfig } from './user-config'
 import { SidebarNav, type SettingsNavGroup } from './components/sidebar-nav'
 
 interface NavItemConfig {
@@ -102,6 +103,20 @@ function buildNavConfig(
         },
       ],
     },
+    {
+      label: t('nav.groupAdmin'),
+      items: [
+        {
+          title: t('nav.userConfig'),
+          tab: 'user-config',
+          icon: {
+            line: RiUserSettingsLine,
+            fill: RiUserSettingsFill,
+          },
+          permission: 'member:manage',
+        },
+      ],
+    },
   ]
 }
 
@@ -154,6 +169,12 @@ function SettingsPanel({ tab }: { tab: SettingsTab }) {
     case 'logs':
       return hasPermission('log:read') ? (
         <SettingsLogs />
+      ) : (
+        <NoPermission />
+      )
+    case 'user-config':
+      return hasPermission('member:manage') ? (
+        <SettingsUserConfig />
       ) : (
         <NoPermission />
       )

@@ -22,6 +22,7 @@ import {
   SettingsPageTitle,
 } from '../components/settings-page-header'
 import { InviteDialog } from './invite-dialog'
+import { CreateUserDialog } from './create-user-dialog'
 import { RoleOptionLabel } from './role-option-label'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -90,6 +91,7 @@ export function SettingsMembers() {
   const [keyword, setKeyword] = useState('')
   const [loading, setLoading] = useState(false)
   const [inviteOpen, setInviteOpen] = useState(false)
+  const [createOpen, setCreateOpen] = useState(false)
 
   const [removeTarget, setRemoveTarget] = useState<WorkspaceMember | null>(null)
 
@@ -221,10 +223,20 @@ export function SettingsMembers() {
             </TabsTrigger>
           </TabsList>
           {canInvite && (
-            <Button size='sm' onClick={() => setInviteOpen(true)}>
-              <UserPlus className='mr-1.5 h-4 w-4' />
-              {t('members.inviteMember')}
-            </Button>
+            <div className='flex items-center gap-2'>
+              <Button size='sm' onClick={() => setCreateOpen(true)}>
+                <UserPlus className='mr-1.5 h-4 w-4' />
+                {t('members.createUser')}
+              </Button>
+              <Button
+                size='sm'
+                variant='outline'
+                onClick={() => setInviteOpen(true)}
+              >
+                <UserPlus className='mr-1.5 h-4 w-4' />
+                {t('members.inviteMember')}
+              </Button>
+            </div>
           )}
         </div>
 
@@ -482,6 +494,15 @@ export function SettingsMembers() {
         roles={roles}
         onSuccess={() => {
           fetchInvitations()
+        }}
+      />
+
+      <CreateUserDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        roles={roles}
+        onSuccess={() => {
+          fetchMembers()
         }}
       />
 

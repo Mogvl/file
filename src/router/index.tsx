@@ -8,6 +8,7 @@ import FileManagerPage from '@/pages/files'
 import HomePage from '@/pages/home'
 import LoginPage from '@/pages/login'
 import InvitePage from '@/pages/invite'
+import ForceChangePasswordPage from '@/pages/force-change-password'
 import NewWorkspacePage from '@/pages/workspace/new'
 import SharePage from '@/pages/share'
 import FileCollectionPublicPage from '@/pages/collection'
@@ -227,6 +228,14 @@ export const router = createBrowserRouter([
   {
     path: '/invite',
     element: <InvitePage />,
+  },
+  {
+    path: '/change-password',
+    element: (
+      <AuthOnlyRoute>
+        <ForceChangePasswordPage />
+      </AuthOnlyRoute>
+    ),
   },
   {
     path: '/s/:shareToken',
