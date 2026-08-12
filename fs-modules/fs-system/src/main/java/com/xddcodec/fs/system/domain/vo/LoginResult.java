@@ -32,4 +32,7 @@ public class LoginResult implements Serializable {
     @Schema(description = "访问凭据")
     @JsonIgnore
     private String accessToken;
+
+    @Schema(description = "首次登录是否强制修改密码")
+    private Boolean needChangePassword;
 }

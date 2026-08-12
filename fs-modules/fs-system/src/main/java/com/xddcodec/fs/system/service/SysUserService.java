@@ -45,6 +45,13 @@ public interface SysUserService extends IService<SysUser> {
     void register(UserRegisterCmd cmd);
 
     /**
+     * 管理员创建用户（创建账号 + 加入当前工作空间 + 设置角色）
+     *
+     * @param cmd
+     */
+    void createByAdmin(UserCreateByAdminCmd cmd);
+
+    /**
      * 编辑用户个人信息
      *
      * @param cmd

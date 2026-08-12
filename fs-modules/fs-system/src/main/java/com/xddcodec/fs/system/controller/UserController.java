@@ -6,6 +6,7 @@ import com.xddcodec.fs.system.domain.dto.*;
 import com.xddcodec.fs.system.domain.vo.SysUserVO;
 import com.xddcodec.fs.system.service.SysUserService;
 import com.xddcodec.fs.system.service.SysUserTransferSettingService;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,14 @@ public class UserController {
     @PostMapping("/register")
     public Result<?> register(@Validated @RequestBody UserRegisterCmd cmd) {
         userService.register(cmd);
+        return Result.ok();
+    }
+
+    @Operation(summary = "管理员创建用户")
+    @PostMapping("/create")
+    @SaCheckPermission("member:manage")
+    public Result<?> createByAdmin(@Validated @RequestBody UserCreateByAdminCmd cmd) {
+        userService.createByAdmin(cmd);
         return Result.ok();
     }
 

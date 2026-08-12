@@ -62,6 +62,11 @@ public class SysUser extends BaseEntity {
     private Integer status;
 
     /**
+     * 首次登录是否强制修改密码 0-否 1-是（仅管理员新建用户）
+     */
+    private Integer forceChangePassword;
+
+    /**
      * 最后登录时间
      */
     private LocalDateTime lastLoginAt;

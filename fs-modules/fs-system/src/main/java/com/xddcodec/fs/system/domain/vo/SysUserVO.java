@@ -57,4 +57,7 @@ public class SysUserVO implements Serializable {
 
     @Schema(description = "是否设置密码")
     private Boolean isSetPassword;
+
+    @Schema(description = "首次登录是否强制修改密码 0-否 1-是")
+    private Integer forceChangePassword;
 }

@@ -14,14 +14,19 @@ import com.xddcodec.fs.framework.notify.mail.event.MailEvent;
 import com.xddcodec.fs.framework.redis.repository.RedisRepository;
 import com.xddcodec.fs.storage.plugin.boot.StoragePluginManager;
 import com.xddcodec.fs.storage.plugin.core.IStorageOperationService;
+import com.xddcodec.fs.system.domain.SysRole;
 import com.xddcodec.fs.system.domain.SysUser;
 import com.xddcodec.fs.system.domain.dto.*;
 import com.xddcodec.fs.system.domain.vo.SysUserVO;
 import com.xddcodec.fs.system.mapper.SysUserMapper;
 import com.xddcodec.fs.system.auth.PasswordHashService;
+import com.xddcodec.fs.framework.common.context.WorkspaceContext;
+import com.xddcodec.fs.system.service.SysUserConfigService;
 import com.xddcodec.fs.system.service.SysUserService;
 import com.xddcodec.fs.system.service.SysUserTransferSettingService;
 import com.xddcodec.fs.system.service.SysWorkspaceInvitationService;
+import com.xddcodec.fs.system.service.SysWorkspaceMemberService;
+import com.xddcodec.fs.system.service.SysRoleService;
 import io.github.linpeilie.Converter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +65,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final SysUserTransferSettingService userTransferSettingService;
 
     private final SysWorkspaceInvitationService workspaceInvitationService;
+
+    private final SysWorkspaceMemberService workspaceMemberService;
+
+    private final SysRoleService roleService;
+
+    private final SysUserConfigService userConfigService;
 
     private final StoragePluginManager pluginManager;
 
@@ -118,6 +129,59 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (cmd.getInviteToken() != null && !cmd.getInviteToken().isBlank()) {
             workspaceInvitationService.acceptInvitation(cmd.getInviteToken(), user.getId());
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void createByAdmin(UserCreateByAdminCmd cmd) {
+        // 用户名唯一
+        if (this.getByUsername(cmd.getUsername()) != null) {
+            throw new BusinessException(I18nUtils.getMessage("user.username.exists"));
+        }
+        // 邮箱唯一
+        SysUser byMail = this.getByMail(cmd.getEmail().trim().toLowerCase(Locale.ROOT));
+        if (byMail != null) {
+            throw new BusinessException(I18nUtils.getMessage("user.email.exists"));
+        }
+        // 角色必须存在
+        SysRole role = roleService.getRoleById(cmd.getRoleId());
+        if (role == null) {
+            throw new BusinessException(I18nUtils.getMessage("role.not.exist"));
+        }
+        // 当前工作空间必须存在
+        String workspaceId = WorkspaceContext.getWorkspaceId();
+        if (workspaceId == null || workspaceId.isBlank()) {
+            throw new BusinessException(I18nUtils.getMessage("workspace.not.exist"));
+        }
+
+        // 密码：优先使用管理员填写的，否则使用配置的默认初始密码
+        String rawPassword = cmd.getPassword();
+        if (rawPassword == null || rawPassword.isBlank()) {
+            rawPassword = userConfigService.getDefaultPassword();
+            if (rawPassword == null || rawPassword.isBlank()) {
+                throw new BusinessException(I18nUtils.getMessage("user.default.password.not.set"));
+            }
+        }
+
+        SysUser user = new SysUser();
+        user.setUsername(cmd.getUsername());
+        user.setPassword(passwordHashService.encode(rawPassword));
+        user.setEmail(cmd.getEmail().trim().toLowerCase(Locale.ROOT));
+        user.setNickname(cmd.getNickname());
+        user.setStatus(0);
+        // 管理员新建用户：按配置决定首次登录是否强制改密
+        user.setForceChangePassword(userConfigService.isForceChangePasswordOnFirstLogin() ? 1 : 0);
+        this.save(user);
+
+        // 初始化用户传输配置
+        userTransferSettingService.initUserTransferSetting(user.getId());
+
+        // 加入当前工作空间并设置角色
+        CreateWorkspaceMemberCmd memberCmd = new CreateWorkspaceMemberCmd();
+        memberCmd.setWorkspaceId(workspaceId);
+        memberCmd.setUserId(user.getId());
+        memberCmd.setRoleId(cmd.getRoleId());
+        workspaceMemberService.createMember(memberCmd);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -235,23 +299,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException(I18nUtils.getMessage("user.password.not.match"));
         }
         user.setPassword(passwordHashService.encode(cmd.getNewPassword()));
+        // 修改密码后，清除强制改密标记（保证即使换账号也能用）
+        user.setForceChangePassword(0);
         this.updateById(user);
     }
 
     @Override
+    @CacheEvict(value = "user", keyGenerator = "userKeyGenerator")
     public void setPassword(PasswordAddCmd cmd) {
         String userId = StpUtil.getLoginIdAsString();
         SysUser user = this.getById(userId);
         if (user == null) {
             throw new BusinessException(I18nUtils.getMessage("user.not.exist"));
         }
-        if (user.getPassword() != null && !user.getPassword().isBlank()) {
-            throw new BusinessException(I18nUtils.getMessage("user.password.already.set"));
-        }
         if (!cmd.getNewPassword().equals(cmd.getConfirmPassword())) {
             throw new BusinessException(I18nUtils.getMessage("user.password.not.match"));
         }
         user.setPassword(passwordHashService.encode(cmd.getNewPassword()));
+        // 首次设置密码后，清除强制改密标记
+        user.setForceChangePassword(0);
         this.updateById(user);
     }
 
