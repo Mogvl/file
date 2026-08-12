@@ -52,6 +52,14 @@ public interface SysUserService extends IService<SysUser> {
     void createByAdmin(UserCreateByAdminCmd cmd);
 
     /**
+     * 管理员批量创建用户
+     *
+     * @param cmd
+     * @return 实际创建数量
+     */
+    int batchCreateByAdmin(UserBatchCreateCmd cmd);
+
+    /**
      * 编辑用户个人信息
      *
      * @param cmd

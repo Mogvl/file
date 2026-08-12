@@ -190,6 +190,68 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Transactional(rollbackFor = Exception.class)
     @Override
+    public int batchCreateByAdmin(UserBatchCreateCmd cmd) {
+        // 角色必须存在
+        SysRole role = roleService.getRoleById(cmd.getRoleId());
+        if (role == null) {
+            throw new BusinessException(I18nUtils.getMessage("role.not.exist"));
+        }
+        // 当前工作空间必须存在
+        String workspaceId = WorkspaceContext.getWorkspaceId();
+        if (workspaceId == null || workspaceId.isBlank()) {
+            throw new BusinessException(I18nUtils.getMessage("workspace.not.exist"));
+        }
+        // 默认初始密码
+        String defaultPassword = userConfigService.getDefaultPassword();
+        boolean forceChange = userConfigService.isForceChangePasswordOnFirstLogin();
+
+        // 校验用户名/邮箱重复（列表内与库内）
+        for (UserBatchItemCmd item : cmd.getUsers()) {
+            if (this.getByUsername(item.getUsername()) != null) {
+                throw new BusinessException(I18nUtils.getMessage("user.username.exists") + ": " + item.getUsername());
+            }
+            if (item.getEmail() != null && !item.getEmail().isBlank()
+                    && this.getByMail(item.getEmail().trim().toLowerCase(Locale.ROOT)) != null) {
+                throw new BusinessException(I18nUtils.getMessage("user.email.exists") + ": " + item.getEmail());
+            }
+        }
+
+        int count = 0;
+        for (UserBatchItemCmd item : cmd.getUsers()) {
+            // 密码：优先使用条目密码，否则使用默认初始密码
+            String rawPassword = item.getPassword();
+            if (rawPassword == null || rawPassword.isBlank()) {
+                rawPassword = defaultPassword;
+            }
+            if (rawPassword == null || rawPassword.isBlank()) {
+                throw new BusinessException(I18nUtils.getMessage("user.default.password.not.set"));
+            }
+
+            SysUser user = new SysUser();
+            user.setUsername(item.getUsername());
+            user.setPassword(passwordHashService.encode(rawPassword));
+            if (item.getEmail() != null && !item.getEmail().isBlank()) {
+                user.setEmail(item.getEmail().trim().toLowerCase(Locale.ROOT));
+            }
+            user.setNickname(item.getNickname());
+            user.setStatus(0);
+            user.setForceChangePassword(forceChange ? 1 : 0);
+            this.save(user);
+
+            userTransferSettingService.initUserTransferSetting(user.getId());
+
+            CreateWorkspaceMemberCmd memberCmd = new CreateWorkspaceMemberCmd();
+            memberCmd.setWorkspaceId(workspaceId);
+            memberCmd.setUserId(user.getId());
+            memberCmd.setRoleId(cmd.getRoleId());
+            workspaceMemberService.createMember(memberCmd);
+            count++;
+        }
+        return count;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
     @CacheEvict(value = "user", keyGenerator = "userKeyGenerator")
     public void editUserInfo(UserEditInfoCmd cmd) {
         String userId = StpUtil.getLoginIdAsString();

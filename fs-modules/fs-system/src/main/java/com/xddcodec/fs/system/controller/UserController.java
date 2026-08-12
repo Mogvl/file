@@ -53,6 +53,14 @@ public class UserController {
         return Result.ok();
     }
 
+    @Operation(summary = "管理员批量创建用户")
+    @PostMapping("/batch-create")
+    @SaCheckPermission("member:manage")
+    public Result<?> batchCreateByAdmin(@Validated @RequestBody UserBatchCreateCmd cmd) {
+        int count = userService.batchCreateByAdmin(cmd);
+        return Result.ok(count);
+    }
+
     @Operation(summary = "编辑用户")
     @PutMapping("/info")
     public Result<?> editUserInfo(@Validated @RequestBody UserEditInfoCmd cmd) {
