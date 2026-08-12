@@ -12,6 +12,7 @@ import {
   ForgotPasswordParams,
   UpdateUserInfoParams,
   UserCreateByAdminParams,
+  UserBatchCreateParams,
   UserConfig,
   UserConfigUpdateParams,
 } from '@/types/user'
@@ -36,6 +37,11 @@ export const userApi = {
   /** 管理员创建用户 */
   createByAdmin: (data: UserCreateByAdminParams) => {
     return request.post<unknown>('/apis/user/create', data)
+  },
+
+  /** 管理员批量创建用户 */
+  batchCreateByAdmin: (data: UserBatchCreateParams) => {
+    return request.post<number>('/apis/user/batch-create', data)
   },
 
   /** 获取用户管理配置 */

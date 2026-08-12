@@ -191,7 +191,6 @@ export function CreateUserDialog({
                 loading ||
                 !username.trim() ||
                 !nickname.trim() ||
-                !email.trim() ||
                 !roleId
               }
             >

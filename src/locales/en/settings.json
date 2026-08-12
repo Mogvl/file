@@ -272,6 +272,24 @@
       "creating": "Creating...",
       "cancel": "Cancel",
       "emailOptionalHint": "Optional. Leave blank for an account without email."
+    },
+    "batchCreate": "Batch Add",
+    "batchDialog": {
+      "title": "Batch Create Users",
+      "description": "Create multiple users at once, all with the selected role.",
+      "users": "User list",
+      "placeholder": "One user per line: username,nickname[,email][,initial password]\nExample:\nzhangsan,Zhang San\nlisi,Li Si,lisi@test.com\nwangwu,Wang Wu,wangwu@test.com,Passw0rd123",
+      "formatHint": "Separate with comma or tab; username and nickname required. Email and password optional (leave password blank to use default).",
+      "selectRole": "Role",
+      "selectRolePlaceholder": "Select role",
+      "fillAll": "Please enter user list and select a role",
+      "parseFailed": "No valid users could be parsed, please check format",
+      "parseError": "{{count}} lines have invalid format, creation cancelled",
+      "created": "Created {{count}} users",
+      "createFailed": "Batch create failed",
+      "create": "Create",
+      "creating": "Creating...",
+      "cancel": "Cancel"
     }
   },
   "profile": {

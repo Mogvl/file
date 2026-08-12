@@ -272,6 +272,24 @@
       "creating": "创建中...",
       "cancel": "取消",
       "emailOptionalHint": "可选，不填则该账号无邮箱"
+    },
+    "batchCreate": "批量新增",
+    "batchDialog": {
+      "title": "批量新增用户",
+      "description": "一次创建多个用户，每个用户统一使用所选角色。",
+      "users": "用户列表",
+      "placeholder": "每行一个用户，格式：用户名,昵称[,邮箱][,初始密码]\n例如：\nzhangsan,张三\nlisi,李四,lisi@test.com\nwangwu,王五,wangwu@test.com,Passw0rd123",
+      "formatHint": "支持逗号或 Tab 分隔；用户名和昵称必填，邮箱和初始密码可选（不填密码则用默认初始密码）",
+      "selectRole": "角色",
+      "selectRolePlaceholder": "请选择角色",
+      "fillAll": "请填写用户列表并选择角色",
+      "parseFailed": "无法解析出有效用户，请检查格式",
+      "parseError": "{{count}} 行格式有误，已取消创建",
+      "created": "成功创建 {{count}} 个用户",
+      "createFailed": "批量创建失败",
+      "create": "批量创建",
+      "creating": "创建中...",
+      "cancel": "取消"
     }
   },
   "profile": {

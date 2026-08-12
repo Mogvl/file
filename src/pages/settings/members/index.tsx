@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
   UserPlus,
+  Users,
   MoreHorizontal,
   Search,
   ChevronLeft,
@@ -23,6 +24,7 @@ import {
 } from '../components/settings-page-header'
 import { InviteDialog } from './invite-dialog'
 import { CreateUserDialog } from './create-user-dialog'
+import { BatchCreateUserDialog } from './batch-create-user-dialog'
 import { RoleOptionLabel } from './role-option-label'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -92,6 +94,7 @@ export function SettingsMembers() {
   const [loading, setLoading] = useState(false)
   const [inviteOpen, setInviteOpen] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
+  const [batchOpen, setBatchOpen] = useState(false)
 
   const [removeTarget, setRemoveTarget] = useState<WorkspaceMember | null>(null)
 
@@ -227,6 +230,14 @@ export function SettingsMembers() {
               <Button size='sm' onClick={() => setCreateOpen(true)}>
                 <UserPlus className='mr-1.5 h-4 w-4' />
                 {t('members.createUser')}
+              </Button>
+              <Button
+                size='sm'
+                variant='outline'
+                onClick={() => setBatchOpen(true)}
+              >
+                <Users className='mr-1.5 h-4 w-4' />
+                {t('members.batchCreate')}
               </Button>
               <Button
                 size='sm'
@@ -500,6 +511,15 @@ export function SettingsMembers() {
       <CreateUserDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
+        roles={roles}
+        onSuccess={() => {
+          fetchMembers()
+        }}
+      />
+
+      <BatchCreateUserDialog
+        open={batchOpen}
+        onOpenChange={setBatchOpen}
         roles={roles}
         onSuccess={() => {
           fetchMembers()

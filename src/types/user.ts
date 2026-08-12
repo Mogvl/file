@@ -61,6 +61,20 @@ export interface UserCreateByAdminParams {
   roleId: number
 }
 
+/** 批量创建用户单条 */
+export interface UserBatchItem {
+  username: string
+  nickname: string
+  email?: string
+  password?: string
+}
+
+/** 批量创建用户请求 */
+export interface UserBatchCreateParams {
+  users: UserBatchItem[]
+  roleId: number
+}
+
 /** 用户管理配置 */
 export interface UserConfig {
   /** 默认初始密码（已配置时掩码回显） */
