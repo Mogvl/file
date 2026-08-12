@@ -70,6 +70,10 @@ public class EmailLoginStrategy implements LoginStrategy {
         LoginResult loginResult = new LoginResult();
         loginResult.setId(user.getId());
         loginResult.setUsername(user.getUsername());
+        // 管理员新建用户：标记首次登录需强制修改密码（与密码登录保持一致）
+        if (user.getForceChangePassword() != null && user.getForceChangePassword() == 1) {
+            loginResult.setNeedChangePassword(true);
+        }
         //修改最后登录时间
         user.setLastLoginAt(LocalDateTime.now());
         userMapper.update(user);
