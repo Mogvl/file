@@ -78,7 +78,7 @@ function AuthOnlyRoute({ children }: { children: React.ReactNode }) {
 /** 根路径重定向：已登录 → /w/{slug}/，未登录 → /login */
 function RootRedirect() {
   const { t } = useTranslation('common')
-  const { isAuthenticated, isLoading, needsWorkspaceSetup } = useAuth()
+  const { isAuthenticated, isLoading, needsWorkspaceSetup, user } = useAuth()
   const workspaces = useWorkspaceStore((s) => s.workspaces)
   const lastId = useWorkspaceStore((s) => s.currentWorkspaceId)
 
@@ -92,6 +92,11 @@ function RootRedirect() {
 
   if (!isAuthenticated) {
     return <Navigate to='/login' replace />
+  }
+
+  // 首次登录强制改密用户，刷新/直达根路径时先强制改密
+  if (user?.forceChangePassword === 1) {
+    return <Navigate to='/change-password' replace />
   }
 
   if (needsWorkspaceSetup) {
@@ -121,11 +126,21 @@ function WorkspaceGuard() {
   const { t } = useTranslation('common')
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
-  const { isAuthenticated, isLoading, activateWorkspace } = useAuth()
+  const {
+    isAuthenticated,
+    isLoading,
+    activateWorkspace,
+    user,
+  } = useAuth()
   const workspaces = useWorkspaceStore((s) => s.workspaces)
   const [activating, setActivating] = useState(false)
   const [ready, setReady] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // 首次登录强制改密用户：任何受保护的工作空间页面先引导改密
+  if (!isLoading && isAuthenticated && user?.forceChangePassword === 1) {
+    return <Navigate to='/change-password' replace />
+  }
 
   useEffect(() => {
     if (isLoading || !isAuthenticated || !slug) return

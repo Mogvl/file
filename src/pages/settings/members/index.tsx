@@ -12,6 +12,7 @@ import {
 import dayjs from 'dayjs'
 import { workspaceApi } from '@/api/workspace'
 import { roleApi } from '@/api/role'
+import { getAvatarFallback } from '@/utils/avatar'
 import { usePermission } from '@/hooks/use-permission'
 import { useAuth } from '@/contexts/auth-context'
 import { useWorkspaceStore } from '@/store/workspace'
@@ -304,12 +305,12 @@ export function SettingsMembers() {
                           <Avatar className='h-8 w-8'>
                             {m.avatar && <AvatarImage src={m.avatar} />}
                             <AvatarFallback className='text-xs'>
-                              {(m.nickname || m.username).slice(0, 2).toUpperCase()}
+                              {getAvatarFallback(m.nickname || m.username || '')}
                             </AvatarFallback>
                           </Avatar>
                           <div className='min-w-0'>
                             <div className='flex items-center gap-1.5 truncate text-sm font-medium'>
-                              {m.nickname || m.username}
+                              {m.nickname || m.username || '—'}
                               {isSelf(m.userId) && (
                                 <Badge variant='secondary' className='text-[10px] px-1.5 py-0'>
                                   {t('members.you')}
@@ -317,7 +318,7 @@ export function SettingsMembers() {
                               )}
                             </div>
                             <div className='truncate text-xs text-muted-foreground'>
-                              {m.email}
+                              {m.email || ''}
                             </div>
                           </div>
                         </div>

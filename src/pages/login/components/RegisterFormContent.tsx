@@ -55,7 +55,7 @@ export default function RegisterFormContent({ onSwitchForm, inviteToken }: Props
       if (formData.inviteToken) {
         // 有邀请 token：自动登录并进入邀请的工作空间
         try {
-          await userApi.login({
+          const loginRes = await userApi.login({
             loginType: 'password',
             account: formData.username,
             password: formData.password,
@@ -64,6 +64,11 @@ export default function RegisterFormContent({ onSwitchForm, inviteToken }: Props
           const userInfo = await userApi.getUserInfo()
           await login(userInfo, true)
           toast.success(t('toast.registerAndJoinSuccess'))
+          // 管理员新建用户：首次登录需强制修改密码
+          if (loginRes?.needChangePassword) {
+            navigate('/change-password', { replace: true })
+            return
+          }
           navigate('/')
         } catch {
           onSwitchForm('login')

@@ -27,7 +27,7 @@ export default function ForceChangePasswordPage() {
   if (!user) return null
 
   const handleSuccess = async () => {
-    // 改密成功后，后端会清除 forceChangePassword 标记；
+    // 改密成功后，后端已清除 forceChangePassword 标记；
     // 这里同步更新本地 user，解除强制改密状态
     updateUser({ forceChangePassword: 0 })
     navigate('/', { replace: true })

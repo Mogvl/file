@@ -15,6 +15,8 @@ interface UserState {
   updatedAt: string
   lastLoginAt: string
   isSetPassword?: boolean
+  /** 首次登录是否强制修改密码（不持久化，仅从 AuthContext 读取） */
+  forceChangePassword?: number
   transferSetting?: TransferSetting
   setUserInfo: (userInfo: UserInfo) => void
   setTransferSetting: (setting: TransferSetting) => void
@@ -35,6 +37,7 @@ export const useUserStore = create<UserState>()(
       updatedAt: '',
       lastLoginAt: '',
       isSetPassword: undefined,
+      forceChangePassword: undefined,
       transferSetting: undefined,
       setUserInfo: (userInfo) =>
         set({
@@ -48,6 +51,7 @@ export const useUserStore = create<UserState>()(
           updatedAt: userInfo.updatedAt,
           lastLoginAt: userInfo.lastLoginAt,
           isSetPassword: userInfo.isSetPassword,
+          forceChangePassword: userInfo.forceChangePassword,
         }),
       setTransferSetting: (setting) => set({ transferSetting: setting }),
       loadTransferSetting: async () => {
@@ -80,6 +84,7 @@ export const useUserStore = create<UserState>()(
           updatedAt: '',
           lastLoginAt: '',
           isSetPassword: undefined,
+          forceChangePassword: undefined,
           transferSetting: undefined,
         }),
     }),

@@ -130,6 +130,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 updatedAt: userStore.updatedAt,
                 lastLoginAt: userStore.lastLoginAt,
                 isSetPassword: userStore.isSetPassword,
+                forceChangePassword: userStore.forceChangePassword,
               }
             }
           }
