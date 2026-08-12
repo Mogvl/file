@@ -12,6 +12,7 @@ import {
 import dayjs from 'dayjs'
 import { workspaceApi } from '@/api/workspace'
 import { roleApi } from '@/api/role'
+import { userApi } from '@/api/user'
 import { getAvatarFallback } from '@/utils/avatar'
 import { usePermission } from '@/hooks/use-permission'
 import { useAuth } from '@/contexts/auth-context'
@@ -98,6 +99,7 @@ export function SettingsMembers() {
   const [batchOpen, setBatchOpen] = useState(false)
 
   const [removeTarget, setRemoveTarget] = useState<WorkspaceMember | null>(null)
+  const [deleteUserTarget, setDeleteUserTarget] = useState<WorkspaceMember | null>(null)
 
   type InviteStatusInfo = {
     label: string
@@ -189,6 +191,18 @@ export function SettingsMembers() {
       fetchMembers()
     } catch (err: any) {
       if (!err?.handled) toast.error(t('members.removeFailed'))
+    }
+  }
+
+  const handleDeleteUser = async () => {
+    if (!removeTarget) return
+    try {
+      await userApi.deleteByAdmin(removeTarget.userId)
+      toast.success(t('members.userDeleted'))
+      setRemoveTarget(null)
+      fetchMembers()
+    } catch (err: any) {
+      if (!err?.handled) toast.error(t('members.userDeleteFailed'))
     }
   }
 
@@ -380,10 +394,17 @@ export function SettingsMembers() {
                               <DropdownMenuContent align='end'>
                                 {canDeleteUser && (
                                   <DropdownMenuItem
-                                    className='text-destructive focus:text-destructive'
                                     onClick={() => setRemoveTarget(m)}
                                   >
                                     {t('members.removeMember')}
+                                  </DropdownMenuItem>
+                                )}
+                                {canDeleteUser && (
+                                  <DropdownMenuItem
+                                    className='text-destructive focus:text-destructive'
+                                    onClick={() => setDeleteUserTarget(m)}
+                                  >
+                                    {t('members.deleteUser')}
                                   </DropdownMenuItem>
                                 )}
                               </DropdownMenuContent>
@@ -548,6 +569,32 @@ export function SettingsMembers() {
               onClick={handleRemoveMember}
             >
               {t('members.confirmRemove')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={!!deleteUserTarget}
+        onOpenChange={(open) => !open && setDeleteUserTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('members.confirmDeleteUserTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('members.confirmDeleteUserDesc', {
+                name:
+                  deleteUserTarget?.nickname || deleteUserTarget?.username || '',
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('account.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+              onClick={handleDeleteUser}
+            >
+              {t('members.confirmDeleteUser')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

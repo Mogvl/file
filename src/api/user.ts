@@ -44,6 +44,11 @@ export const userApi = {
     return request.post<number>('/apis/user/batch-create', data)
   },
 
+  /** 管理员删除用户 */
+  deleteByAdmin: (userId: string) => {
+    return request.delete<unknown>('/apis/user', { data: { userId } })
+  },
+
   /** 获取用户管理配置 */
   getUserConfig: () => {
     return request.get<UserConfig>('/apis/user-config')

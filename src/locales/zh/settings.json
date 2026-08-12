@@ -290,7 +290,13 @@
       "create": "批量创建",
       "creating": "创建中...",
       "cancel": "取消"
-    }
+    },
+    "deleteUser": "删除用户",
+    "confirmDeleteUserTitle": "删除用户",
+    "confirmDeleteUserDesc": "确定要永久删除用户「{{name}}」吗？该用户的成员关系、传输配置等关联数据将一并删除，此操作不可恢复。",
+    "confirmDeleteUser": "确认删除",
+    "userDeleted": "用户已删除",
+    "userDeleteFailed": "删除用户失败"
   },
   "profile": {
     "pageTitle": "个人资料",

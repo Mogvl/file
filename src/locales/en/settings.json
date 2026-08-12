@@ -290,7 +290,13 @@
       "create": "Create",
       "creating": "Creating...",
       "cancel": "Cancel"
-    }
+    },
+    "deleteUser": "Delete User",
+    "confirmDeleteUserTitle": "Delete User",
+    "confirmDeleteUserDesc": "Permanently delete user \"{{name}}\"? Their memberships, transfer settings and related data will also be removed. This cannot be undone.",
+    "confirmDeleteUser": "Delete",
+    "userDeleted": "User deleted",
+    "userDeleteFailed": "Failed to delete user"
   },
   "profile": {
     "pageTitle": "Profile",
