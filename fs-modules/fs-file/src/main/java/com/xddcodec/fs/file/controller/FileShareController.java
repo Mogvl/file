@@ -9,6 +9,7 @@ import com.xddcodec.fs.file.service.FileShareAccessRecordService;
 import com.xddcodec.fs.file.service.FileShareService;
 import com.xddcodec.fs.framework.common.domain.PageResult;
 import com.xddcodec.fs.framework.common.domain.Result;
+import com.xddcodec.fs.framework.common.exception.BusinessException;
 import com.xddcodec.fs.log.constant.OperationType;
 import com.xddcodec.fs.log.service.SysOperationLogService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -147,6 +148,9 @@ public class FileShareController {
                     .headers(headers)
                     .contentLength(fileDownload.getFileSize())
                     .body(fileDownload.getResource());
+        } catch (BusinessException e) {
+            // 业务错误（文件不在分享/分享不存在/文件不存在）返回明确的错误信息，而非笼统的 500
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("文件下载失败", e);
         }

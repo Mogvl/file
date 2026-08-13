@@ -108,11 +108,19 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
     @Override
 //    @Cacheable(value = CACHE_NAME, key = "#shareId", unless = "#result == null", sync = true)
     public FileShareVO getDetail(String shareId) {
+        FileShareVO vo = buildShareVO(getShareByIdInContext(shareId));
+        return vo;
+    }
+
+    /**
+     * 按当前上下文读取分享。
+     * - 无工作空间上下文（公开分享页/校验分享码）：仅按分享ID读取
+     * - 有工作空间上下文（登录态/API）：必须归属当前工作空间
+     */
+    private FileShare getShareByIdInContext(String shareId) {
         String workspaceId = WorkspaceContext.getWorkspaceId();
         QueryWrapper wrapper = new QueryWrapper()
                 .where(FILE_SHARE.ID.eq(shareId));
-        // 公开分享场景（校验分享码/访问分享页）无工作空间上下文，
-        // 此时不按工作空间过滤；登录态下则校验分享归属当前工作空间。
         if (workspaceId != null && !workspaceId.isBlank()) {
             wrapper.and(FILE_SHARE.WORKSPACE_ID.eq(workspaceId));
         }
@@ -120,7 +128,7 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
         if (share == null) {
             throw new BusinessException(I18nUtils.getMessage("share.not.exist"));
         }
-        return buildShareVO(share);
+        return share;
     }
 
     /**
@@ -175,7 +183,8 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
             share.setExpireTime(calculateExpireTime(cmd.getExpireType()));
         }
 
-        if (cmd.getNeedShareCode()) {
+        // 未传 needShareCode 视为公开（不设提取码），避免 null 解包 NPE
+        if (Boolean.TRUE.equals(cmd.getNeedShareCode())) {
             share.setShareCode(RandomUtil.randomString(4));
         }
 
@@ -339,6 +348,10 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
         FileShare fileShare = getValidShare(shareId);
         List<String> shareFileIds = fileShareItemService.getShareFileIds(shareId);
         FileInfo fileInfo = getShareAccessibleFile(fileShare, shareFileIds, fileId);
+        if (fileInfo == null || StrUtil.isBlank(fileInfo.getObjectKey())) {
+            // 分享内文件已物理删除或不存在，返回明确的业务错误，避免落到底层 NPE
+            throw new BusinessException(I18nUtils.getMessage("file.download.failed.not.exist"));
+        }
 
         IStorageOperationService storageService = storageServiceFacade.getStorageService(fileInfo.getStoragePlatformSettingId());
 
@@ -404,11 +417,18 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
         return fileShare;
     }
 
+    /**
+     * 校验分享文件访问权：要求目标文件最终属于该分享，且祖先链不经过回收站。
+     * 分享创建者删除(移入回收站)分享内的文件后，该文件及子孙即从分享中移除，
+     * 防止通过分享链接访问回收站中的文件。
+     */
     private FileInfo getShareAccessibleFile(FileShare share, List<String> shareFileIds, String fileId) {
         FileInfo target = fileInfoService.getOne(new QueryWrapper()
                 .where(FILE_INFO.ID.eq(fileId))
-                .and(FILE_INFO.WORKSPACE_ID.eq(share.getWorkspaceId()))
-                .and(FILE_INFO.IS_DELETED.eq(false)));
+                .and(FILE_INFO.WORKSPACE_ID.eq(share.getWorkspaceId())));
+        if (target == null) {
+            throw new BusinessException(I18nUtils.getMessage("share.not.exist.or.deleted"));
+        }
         FileInfo current = target;
         Set<String> visited = new HashSet<>();
 
@@ -421,8 +441,7 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
             }
             current = fileInfoService.getOne(new QueryWrapper()
                     .where(FILE_INFO.ID.eq(current.getParentId()))
-                    .and(FILE_INFO.WORKSPACE_ID.eq(share.getWorkspaceId()))
-                    .and(FILE_INFO.IS_DELETED.eq(false)));
+                    .and(FILE_INFO.WORKSPACE_ID.eq(share.getWorkspaceId())));
         }
 
         throw new BusinessException(I18nUtils.getMessage("share.file.not.in.share"));
