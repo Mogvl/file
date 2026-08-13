@@ -109,9 +109,14 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
 //    @Cacheable(value = CACHE_NAME, key = "#shareId", unless = "#result == null", sync = true)
     public FileShareVO getDetail(String shareId) {
         String workspaceId = WorkspaceContext.getWorkspaceId();
-        FileShare share = this.getOne(new QueryWrapper()
-                .where(FILE_SHARE.ID.eq(shareId))
-                .and(FILE_SHARE.WORKSPACE_ID.eq(workspaceId)));
+        QueryWrapper wrapper = new QueryWrapper()
+                .where(FILE_SHARE.ID.eq(shareId));
+        // 公开分享场景（校验分享码/访问分享页）无工作空间上下文，
+        // 此时不按工作空间过滤；登录态下则校验分享归属当前工作空间。
+        if (workspaceId != null && !workspaceId.isBlank()) {
+            wrapper.and(FILE_SHARE.WORKSPACE_ID.eq(workspaceId));
+        }
+        FileShare share = this.getOne(wrapper);
         if (share == null) {
             throw new BusinessException(I18nUtils.getMessage("share.not.exist"));
         }

@@ -14,6 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * 工作空间拦截器 - 从请求头或请求参数提取工作空间ID并验证成员身份
@@ -46,8 +47,16 @@ public class WorkspaceInterceptor implements HandlerInterceptor {
             "/apis/transfer/sse",
             "/apis/file-collections/public",
             "/apis/invitation/verify",  // 邀请验证接口（公开）
-            "/apis/invitation/accept"   // 邀请接受接口（需登录但不需要工作空间）
+            "/apis/invitation/accept",  // 邀请接受接口（需登录但不需要工作空间）
+            "/apis/share/info",         // 公开分享页数据（无需工作空间）
+            "/apis/share/items",        // 公开分享文件列表（无需工作空间）
+            "/apis/share/verify/code",  // 公开分享提取码校验（无需工作空间）
+            "/apis/share/download",     // 公开分享文件下载（无需工作空间）
+            "/apis/share/access/records" // 分享访问记录（分享创建者查看，无需工作空间）
     );
+
+    /** 分享ID前缀模式：用于识别任意分享ID的公开子路径 */
+    private static final Pattern SHARE_ID_PATTERN = Pattern.compile("^/apis/share/[0-9a-zA-Z]{20,}(/.*)?$");
 
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws IOException {
@@ -55,6 +64,12 @@ public class WorkspaceInterceptor implements HandlerInterceptor {
 
         // 白名单直接放行
         if (WHITELIST.stream().anyMatch(path::startsWith)) {
+            return true;
+        }
+
+        // 公开分享页：/apis/share/{shareId}/info|items|download|verify/code 等子路径，
+        // 分享ID（雪花ID）不固定，无法列入前缀白名单，按 ID 形态放行。
+        if (SHARE_ID_PATTERN.matcher(path).matches()) {
             return true;
         }
 
