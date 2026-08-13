@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 import static com.xddcodec.fs.system.domain.table.SysUserTableDef.SYS_USER;
 
@@ -40,12 +41,14 @@ public class EmailLoginStrategy implements LoginStrategy {
     public LoginResult authenticate(LoginCmd cmd) {
         String account = cmd.getAccount();
         String code = cmd.getPassword();
+        // 与发送验证码一致：统一转小写，避免大小写导致 Redis key 不命中
+        String normalizedAccount = account == null ? "" : account.trim().toLowerCase(Locale.ROOT);
 
         if (code == null || code.isBlank()) {
             throw new BusinessException(I18nUtils.getMessage("user.verification.code.required"));
         }
 
-        String redisKey = RedisKey.getLoginKey(account);
+        String redisKey = RedisKey.getLoginKey(normalizedAccount);
         String cachedCode = (String) redisRepository.get(redisKey);
 
         if (cachedCode == null) {

@@ -265,7 +265,10 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
         if (share == null) {
             throw new BusinessException(I18nUtils.getMessage("share.not.exist"));
         }
-
+        // 未设置提取码的分享视为公开，无需校验；设置过才要求匹配
+        if (StrUtil.isBlank(share.getShareCode())) {
+            return true;
+        }
         if (!share.getShareCode().equals(cmd.getShareCode())) {
             throw new BusinessException(I18nUtils.getMessage("share.code.incorrect"));
         }

@@ -579,6 +579,16 @@ public class FileTransferTaskServiceImpl extends ServiceImpl<FileTransferTaskMap
         if (!TransferTaskStatus.uploading.equals(task.getStatus())) {
             throw new BusinessException(I18nUtils.getMessage("task.status.incorrect.expected", new Object[]{task.getStatus()}));
         }
+        // 校验分片序号与大小，防止坏客户端写入越界/超大分片导致合并后文件损坏
+        Integer totalChunks = task.getTotalChunks();
+        Long chunkSize = task.getChunkSize();
+        if (chunkIndex == null || chunkIndex < 0 || (totalChunks != null && chunkIndex >= totalChunks)) {
+            throw new BusinessException(I18nUtils.getMessage("task.chunk.index.invalid", new Object[]{chunkIndex}));
+        }
+        if (fileBytes.length <= 0 || fileBytes.length > (chunkSize == null ? Long.MAX_VALUE : chunkSize)) {
+            throw new BusinessException(I18nUtils.getMessage("task.chunk.size.invalid",
+                    new Object[]{fileBytes.length, chunkSize}));
+        }
         // 检查分片是否已存在（避免重复上传）
         if (cacheManager.isChunkTransferred(taskId, chunkIndex)) {
             log.info("分片已存在，跳过上传: taskId={}, chunkIndex={}", taskId, chunkIndex);
