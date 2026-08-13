@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
         LoginStrategy strategy = loginStrategyFactory.getStrategy(cmd.getLoginType());
         LoginResult result = strategy.authenticate(cmd);
 
-        StpUtil.login(result.getId(), cmd.getIsRemember());
+        StpUtil.login(result.getId(), Boolean.TRUE.equals(cmd.getIsRemember()));
         StpUtil.getSession().set("username", result.getUsername());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         result.setAccessToken(tokenInfo.getTokenValue());
