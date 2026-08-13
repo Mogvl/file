@@ -195,11 +195,11 @@ export function SettingsMembers() {
   }
 
   const handleDeleteUser = async () => {
-    if (!removeTarget) return
+    if (!deleteUserTarget) return
     try {
-      await userApi.deleteByAdmin(removeTarget.userId)
+      await userApi.deleteByAdmin(deleteUserTarget.userId)
       toast.success(t('members.userDeleted'))
-      setRemoveTarget(null)
+      setDeleteUserTarget(null)
       fetchMembers()
     } catch (err: any) {
       if (!err?.handled) toast.error(t('members.userDeleteFailed'))

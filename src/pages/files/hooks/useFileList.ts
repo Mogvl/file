@@ -174,11 +174,15 @@ export function useFileList() {
     if (noMorePages) return
     if (fileCountRef.current >= totalRef.current) return
 
+    const gen = fetchGenerationRef.current
     loadMoreInFlightRef.current = true
     setLoadingMore(true)
     try {
       const nextPage = pageRef.current + 1
       const response = await getFileList(buildQuery(nextPage))
+      // 目录切换 / 刷新 / 筛选期间已重新拉取过列表，丢弃本次过期分页结果
+      if (gen !== fetchGenerationRef.current) return
+
       const records = response?.records ?? []
       const prev = fileListRef.current
       const merged = mergeFileRecords(prev, records)
@@ -206,6 +210,7 @@ export function useFileList() {
       loadMoreInFlightRef.current = false
       setLoadingMore(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, loadingMore, noMorePages, buildQuery])
 
   const refresh = useCallback(() => {
